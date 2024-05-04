@@ -13,8 +13,15 @@ class RyokanPageController extends Controller
      */
     public function index()
     {
+        // 現在ログインしているユーザーの情報を取得
+        $user = Auth::user();
         // 旅館ユーザーに紐づく投稿を取得
         $posts = auth()->user()->posts;
+        // 一般ユーザーに紐づく投稿を取得（予約取得しないとだから必要）
+        $user = auth()->user();
+        
+        // ユーザーが正しく取得されているか確認
+        // dd($user); 
 
         // 投稿一覧ビューを表示
         return view('ryokan.mypage', ['posts' => $posts]);

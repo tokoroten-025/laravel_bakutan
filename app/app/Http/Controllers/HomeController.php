@@ -36,12 +36,12 @@ class HomeController extends Controller
         $userPosts = Auth::user()->post()->get();
 
         // dd($posts);
+
         // 取得した投稿データをビューに渡す
         return view('home',[
-         'latestPosts' => $latestPosts,
-         'userPosts' => $userPosts
+            'latestPosts' => $latestPosts,
+            'userPosts' => $userPosts
         ]);
-        
     }
     // POSTにBookingを紐づけようとするとエラーっぽい表示が出るから一旦パス！
 }
