@@ -15,9 +15,14 @@ class AdminController extends Controller
      */
     public function index()
     {
-        // 管理者が行う必要がある各種操作を含むダッシュボードの表示処理
-        return view('admin.dashboard');
-        
+        // 管理者認証を確認
+        if (auth()->user()->role != 1) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // 管理者が行う必要がある各種操作を含むダッシュボードの表示処理（管理者以外のユーザーを取得）
+        $users = User::where('role', '!=', 10)->get();
+        return view('admins.dashboard', compact('users'));
     }
 
     /**

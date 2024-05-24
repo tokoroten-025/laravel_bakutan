@@ -25,7 +25,7 @@ class CreatePostsTable extends Migration
             // 予約可能人数。NULL を許可。
             $table->string('availability_guests')->nullable();
             // 予約可能日。NULL を許可。
-            $table->string('availability_days')->nullable(); 
+            $table->date('availability_days')->nullable(); 
             // 内容
             $table->text('content', 500);
             // 金額
@@ -33,7 +33,9 @@ class CreatePostsTable extends Migration
             // 画像のファイルパス。※NULL許可
             $table->string('image')->nullable();
             // 投稿日時と更新日時を管理するためのタイムスタンプ。
-            $table->timestamps();
+            $table->dateTime('reservation_datetime')->unique();
+            $table->timestamp('created_at')->upuseCurrent(); // Use current timestamp for 'created_at'
+            $table->timestamp('updated_at')->nullable(); // Allow 'updated_at' to be nullable
             // 論理削除。デフォルト値 0。
             $table->integer('del_flg')->default(0); 
             

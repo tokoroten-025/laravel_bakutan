@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Post;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\BookingController;
+
 
 class PostController extends Controller
 {
@@ -12,26 +15,37 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        // 全ての投稿を取得
-        $posts = Post::all();
+        // ログインしているユーザーの情報を取得
+        $user = Auth::user();
         
-        // 投稿一覧ページを表示
-        return view('posts.index', ['posts' => $posts]);
+        // 旅館ユーザーに紐づく投稿を取得
+        $latestPosts = Post::all();
         
+       // 投稿一覧ページを表示
+       return view('ryokan.mypage', ['user' => $user, 'posts' => $latestPosts]);
+            // 現在ログインしているユーザーの投稿を取得
+            // $user = Auth::user();
+            // $latestPosts = Post::where('user_id', $user->id)->latest()->get();
+            // ユーザー情報と投稿をマイページビューに渡して表示
+            // return view('user.mypage', ['user' => $user, 'latestPosts' => $latestPosts]);
+        
+                $keyword = $request->input('keyword');
+        
+                $query = Post::query();
+        
+                if(!empty($keyword)) {
+                    $query->where('title', 'LIKE', "%{$keyword}%")
+                        ->orWhere('author', 'LIKE', "%{$keyword}%");
+                }
+        
+                $posts = $query->get();
+        
+                return view('index', compact('posts', 'keyword'));
+            
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function createPostForm()
-    {
-        // 新規投稿フォームを表示するページ
-        return view('create.post');
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -40,24 +54,49 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+     public function create()
+    {
+        // 新規投稿フォームを表示するページ
+        return view('posts.create');
+    }
+    
     // 投稿を保存する処理
     public function store(Request $request)
     {
-        //バリデーション
+            //バリデーション
 
 
-        // データベースに投稿を保存
-        $post = new Post();
-        $post->title = $request->title;
-        $post->availability = $request->availability;
-        $post->content = $request->content;
-        $post->amount = $request->amount;
-        // 画像のパスを保存（省略）
-        $post->save();
+            // ログインしているユーザーの ID を取得
+            $userId = auth()->id();
 
-
-        // マイページにリダイレクトする
-        // return redirect('/mypage')
+            // データベースに投稿を保存
+            $post = new Post();
+            $post->title = $request->title;
+            $post->content = $request->content;
+            $post->amount = $request->amount;
+            // ユーザーの ID をセット　書く場所間違えてた。なんでここか後で聞く
+            $post->user_id = $userId;
+            $post->availability_days = $request->availability_days;
+            $post->reservation_datetime = now(); // 現在の日時を設定
+            if ($request->hasFile('image')) {
+                $imageName = $request->file('image')->getClientOriginalName();
+                $extension = $request->file('image')->getClientOriginalExtension();
+                $newImageName = pathinfo($imageName, PATHINFO_FILENAME) . "_" . uniqid() . "." . $extension;
+                $post->image = $newImageName;
+            
+                $post->save();
+            
+                $lastInsertedId = $post->id;
+                if (!file_exists(public_path() . "/img/" . $lastInsertedId)) {
+                    mkdir(public_path() . "/img/" . $lastInsertedId, 0777);
+                }
+                $request->file('image')->move(public_path() . "/img/" . $lastInsertedId . "/" ,$newImageName);
+            } else {
+                $post->save();
+                // ファイルの保存に失敗した場合の処理も必要？？？
+            }
+            // マイページにリダイレクトする
+            return redirect()->route('ryokan.mypage');
     }
 
     /**
@@ -66,9 +105,10 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Post $post)
     {
-        //
+        // 特定の投稿の詳細を表示
+        return view('posts.detail', ['post' => $post]);
     }
 
     /**
@@ -77,9 +117,10 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        // 投稿データをビューに渡す
+        return view('posts.edit', compact('post'));
     }
 
     /**
@@ -91,7 +132,20 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // 指定された ID の投稿を取得
+        $post = Post::findOrFail($id);
+
+        // 投稿の内容を更新
+        $post->title = $request->title;
+        $post->content = $request->content;
+        $post->amount = $request->amount;
+        // availability に関連したデータの取り扱い
+        if ($request->has('availability')) {
+            $post->availability = $request->availability;
+        }
+        $post->save();
+        // 更新後に編集した投稿の詳細ページにリダイレクト
+        return redirect()->route('posts.detail', $post->id);
     }
 
     /**
@@ -100,8 +154,17 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+
+    
+    public function softDestroyPost(Post $post)
     {
-        //
+        $post->del_flg = 1;
+
+        $post->save();
+        // 投稿を削除
+        // $post->delete();
+
+        // マイページにリダイレクト
+        return redirect()->route('ryokan.mypage')->with('success', '投稿が削除されました');
     }
 }

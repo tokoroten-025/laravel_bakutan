@@ -14,24 +14,30 @@ class CreateBookingsTable extends Migration
     public function up()
     {
         Schema::create('bookings', function (Blueprint $table) {
-            
             $table->bigIncrements('id');
             // ユーザid（外部キー）
             $table->unsignedBigInteger('user_id');
             // ポストid（外部キー）
             $table->unsignedBigInteger('post_id');
             // 電話番号
-            $table->string('tel');
+            $table->string('tel')->nullable();
             // メールアドレス
-            $table->string('email,50')->unique();
+            $table->string('email');
             // 宿泊人数
             $table->integer('num_of_guests')->default(1);
             // 宿泊開始日。
             $table->date('checkindate');             
             // 宿泊終了日。
             $table->date('checkoutdate');
+            // タイムスタンプの追加
+            $table->timestamps();
             // 予約をした日時
-            $table->dateTime('reservation_datetime')->unique();
+            $table->dateTime('reservation_datetime')->default(DB::raw('CURRENT_TIMESTAMP'));
+
+            // 外部キー制約
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('post_id')->references('id')->on('posts');
+            
         });
     }
 

@@ -13,22 +13,25 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
+        // カラム名を変更する
+        $table->renameColumn('email,50', 'new_email');
+    
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             // 名前
-            $table->string('name,20');
+            $table->string('name');
             // メールアドレス
-            $table->string('email,50')->unique();
+            $table->string('email')->unique();
             // パスワード
-            $table->string('password,100');
+            $table->string('password');
             // アイコンは必須ではない
             $table->string('icon')->nullable();
             // 論理削除。デフォルト値 0。
             $table->integer('del_flg')->default(0);
             // ユーザータイプ。コメントに一般、旅館、管理の値
-            $table->tinyInteger('role')->default(0)->integer('一般=0,旅館=1,管理=2');
+            $table->tinyInteger('role')->default(10)->comment('一般=10,旅館=1,管理=2');
             // リセットトークンってなに！
-            $table->string('reset_token');
+            $table->string('reset_token')->nullable();
 
             // 作成日時と更新日時を管理するためのタイムスタンプ。
             $table->timestamps();
