@@ -9,9 +9,9 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\RyokanPageController;
 use App\Http\Controllers\UserPageController;
-use Facade\Ignition\Http\Controllers\ExecuteSolutionController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\RepostController;
 
 
 
@@ -25,6 +25,8 @@ use App\Http\Controllers\Auth\LoginController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+// 未ログインユーザーがアクセスできるルート
+Route::get('/posts/{post}', [PostController::class,'show'])->name('posts.detail');
 //　ログイン認証
 Auth::routes(['reset' => true]);
 // ★★★トップページ（今回HOME画面になるところ）
@@ -63,6 +65,9 @@ Route::put('/posts/{post}', [PostController::class,'update'])->name('posts.updat
 Route::delete('/posts/{post}', [PostController::class,'destroy'])->name('posts.destroy');
 // 投稿削除
 Route::delete('/posts/{post}/soft-delete', [PostController::class, 'softDestroyPost'])->name('posts.softDestroyPost');
+// いいね機能
+Route::post('/ajaxlike', [PostController::class, 'ajaxlike'])->name('posts.ajaxlike');
+
 });
 
 
@@ -78,19 +83,34 @@ Route::delete('/user/{id}', [UserPageController::class, 'destroy'])->name('user.
 
 // 予約関連ルート
 Route::get('/posts/{post}/detail', [PostController::class, 'show'])->name('posts.detail');
-
+// 予約一覧画面へ
+Route::get('/user/index', [UserPageController::class, 'myBookings'])->name('my.bookings');
+// 
+Route::get('/user/bookings', [UserPageController::class, 'myBookings'])->name('user.bookings');
 // 予約フォーム画面
 Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
-// 予約フォーム画面
+// 予約作成画面
 Route::get('/bookings/{post}/create', [BookingController::class, 'create'])->name('bookings.create');
-// 確認画面表示ルート
-Route::post('/bookings/{id}/confirm', [BookingController::class,'confirm'])->name('bookings.confirm');
-// 予約処理ルート
-Route::post('/bookings/store', [BookingController::class,'store'])->name('bookings.store');
-// 詳細　
+// 確認画面表示のルート追加
+Route::post('/bookings/confirm', [BookingController::class, 'confirm'])->name('bookings.confirm');
+// 予約編集ページ
+Route::get('/bookings/{id}/edit', [BookingController::class, 'edit'])->name('bookings.edit');
+// 予約更新
+Route::put('/bookings/{id}', [BookingController::class, 'update'])->name('bookings.update');
+// 予約処理
+Route::post('/bookings/store', [BookingController::class, 'store'])->name('bookings.store');
+// 投稿詳細　
 Route::get('/post/{post}', [PostController::class,'show'])->name('posts.detail');
 // 保存
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+// 予約キャンセルルートを追加
+Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+
+//  違反報告
+    Route::post('/repost/{postId}', [RepostController::class, 'reportPost'])->name('repost.post');
+    Route::get('/reposts', [RepostController::class, 'index'])->name('reposts.index');
+    Route::get('/reposts/{id}', [RepostController::class, 'show'])->name('reposts.show');
+    Route::put('/reposts/{id}/resolve', [RepostController::class, 'resolve'])->name('reposts.resolve');
 });
 
 // 後で書き直す！初期にAuth::routes();をコメントアウトして、これ書いたらなんでかエラー無くなった

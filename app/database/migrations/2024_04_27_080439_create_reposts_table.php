@@ -13,15 +13,14 @@ class CreateRepostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('reposts', function (Blueprint $table) {
-            
+        Schema::create('reposts', function (Blueprint $table) {    
             $table->bigIncrements('id');
             // ユーザid（外部キー）
             $table->unsignedBigInteger('user_id');
             // ポストid（外部キー）
             $table->unsignedBigInteger('post_id');
             // 違反理由
-            $table->text('reason,500');
+            $table->text('reason')->nullable();
         });
     }
 

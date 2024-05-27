@@ -57,7 +57,7 @@
                             <input type="tel" class="form-control" id="tel" name="tel" required>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary">予約する</button>
+                        <button type="submit" class="btn btn-primary">確認する</button>
 
                     </form>
                 </div>

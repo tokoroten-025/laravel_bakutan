@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Post;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BookingController;
-
+use App\Like;
 
 class PostController extends Controller
 {
@@ -25,24 +25,19 @@ class PostController extends Controller
         
        // 投稿一覧ページを表示
        return view('ryokan.mypage', ['user' => $user, 'posts' => $latestPosts]);
-            // 現在ログインしているユーザーの投稿を取得
-            // $user = Auth::user();
-            // $latestPosts = Post::where('user_id', $user->id)->latest()->get();
-            // ユーザー情報と投稿をマイページビューに渡して表示
-            // return view('user.mypage', ['user' => $user, 'latestPosts' => $latestPosts]);
+            
+            $keyword = $request->input('keyword');
         
-                $keyword = $request->input('keyword');
+            $query = Post::query();
         
-                $query = Post::query();
+            if(!empty($keyword)) {
+                $query->where('title', 'LIKE', "%{$keyword}%")
+                    ->orWhere('author', 'LIKE', "%{$keyword}%");
+            }
         
-                if(!empty($keyword)) {
-                    $query->where('title', 'LIKE', "%{$keyword}%")
-                        ->orWhere('author', 'LIKE', "%{$keyword}%");
-                }
-        
-                $posts = $query->get();
-        
-                return view('index', compact('posts', 'keyword'));
+            $posts = $query->get();
+    
+            return view('index', compact('posts', 'keyword'));
             
     }
 
@@ -76,14 +71,14 @@ class PostController extends Controller
             $post->amount = $request->amount;
             // ユーザーの ID をセット　書く場所間違えてた。なんでここか後で聞く
             $post->user_id = $userId;
-            $post->availability_days = $request->availability_days;
+            $post->checkindate = $request->checkindate;
+            $post->checkoutdate = $request->checkoutdate;
             $post->reservation_datetime = now(); // 現在の日時を設定
             if ($request->hasFile('image')) {
                 $imageName = $request->file('image')->getClientOriginalName();
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $newImageName = pathinfo($imageName, PATHINFO_FILENAME) . "_" . uniqid() . "." . $extension;
                 $post->image = $newImageName;
-            
                 $post->save();
             
                 $lastInsertedId = $post->id;
@@ -93,7 +88,7 @@ class PostController extends Controller
                 $request->file('image')->move(public_path() . "/img/" . $lastInsertedId . "/" ,$newImageName);
             } else {
                 $post->save();
-                // ファイルの保存に失敗した場合の処理も必要？？？
+                // 保留：ファイルの保存に失敗した場合の処理も必要？？？
             }
             // マイページにリダイレクトする
             return redirect()->route('ryokan.mypage');
@@ -107,10 +102,46 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        //【いいね機能】
+        $like_model = new Like;//Likeモデルのデータ取得
+        $post_like = Post::withCount('likes')->find($post->id);
+
         // 特定の投稿の詳細を表示
-        return view('posts.detail', ['post' => $post]);
+        return view('posts.detail', [
+            'post' => $post,
+            'like_model' => $like_model,
+            'post_like' => $post_like,
+        ]);
+
+        // 特定の投稿の詳細を表示
+        // return view('posts.detail', ['post' => $post]);
     }
 
+    public function ajaxlike(Request $request)
+    {
+        dd('ajax成功');
+        $id = Auth::user()->id;
+        $post_id = $request->post_id;
+        $like = new Like;
+        $post = Post::findOrFail($post_id);
+
+        if ($like->like_exist($id, $post_id)) {
+            $like = Like::where('post_id', $post_id)->where('user_id', $id)->delete();
+        } else {
+            $like = new Like;
+            $like->post_id = $request->post_id;
+            $like->user_id = Auth::user()->id;
+            $like->save();
+        }
+        
+        $postLikesCount = $post->loadCount('likes')->likes_count;
+        
+        $json = [
+            'postLikesCount' => $postLikesCount,
+        ];
+        //下記の記述でajaxに引数の値を返す
+        return response()->json($json);
+    }
     /**
      * Show the form for editing the specified resource.
      *

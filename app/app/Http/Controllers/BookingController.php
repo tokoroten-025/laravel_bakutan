@@ -24,7 +24,6 @@ class BookingController extends Controller
     {
         // 予約の一覧を表示
         $bookings = Booking::all();     
-        
         // 取得した予約情報をビューに渡す
         return view('booking.index', ['bookings' => $bookings]);
 
@@ -44,6 +43,8 @@ class BookingController extends Controller
 
     public function confirm(Request $request)
     {
+        //バリデーション 
+
         // フォームからの入力をセッションに保存
         $request->session()->put([
         'name' => $request->input('name'),
@@ -54,6 +55,12 @@ class BookingController extends Controller
         ]);
 
         return view('bookingconfirm');
+
+        // $request->session()->put('booking_data', $request->all());
+
+        // $post = Post::findOrFail($request->post_id);
+        // $data = $request->all();
+        // return view('bookings.confirm', compact('post', 'data'));
     }
     /**
      * Store a newly created resource in storage.
@@ -100,10 +107,14 @@ class BookingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
-    }
+    // public function myBookings($id)
+    // {
+    //  // 現在ログインしているユーザーの予約一覧を取得
+    //  $userBookings = Booking::where('user_id', Auth::id())->get();
+
+    //  // ユーザーの予約一覧をビューに渡す
+    //  return view('bookings.my', ['userBookings' => $userBookings]);
+    // }
 
     /**
      * Show the form for editing the specified resource.
@@ -113,7 +124,11 @@ class BookingController extends Controller
      */
     public function edit($id)
     {
-        //
+            // 指定された予約を取得
+        $booking = Booking::findOrFail($id);
+
+        // 予約情報を編集ページに渡して表示
+        return view('bookings.edit', compact('booking'));
     }
 
     /**
@@ -125,7 +140,19 @@ class BookingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+            // 指定された予約を取得
+    $booking = Booking::findOrFail($id);
+
+    // 予約情報を更新
+    $booking->name = $request->input('name');
+    $booking->checkindate = $request->input('checkindate');
+    $booking->checkoutdate = $request->input('checkoutdate');
+    $booking->num_of_guests = $request->input('guests');
+    $booking->tel = $request->input('tel');
+    $booking->save();
+
+    // 予約一覧ページにリダイレクト
+    return redirect()->route('my.bookings')->with('success', 'Booking updated successfully.');
     }
 
     /**
@@ -136,6 +163,12 @@ class BookingController extends Controller
      */
     public function destroy($id)
     {
-        //
+        //予約取消
+        // 予約をキャンセルするロジックを実装する
+        $booking = Booking::findOrFail($id);
+        $booking->delete();
+
+        // 予約がキャンセルされたことを通知する
+        return redirect()->route('my.bookings')->with('success', '予約がキャンセルされました');
     }
 }

@@ -63,6 +63,12 @@ class User extends Authenticatable
         return $this -> hasMany('App\Booking','user_id','id');
     }
 
+    // いいね
+    public function like()
+    {
+        return $this->hasMany('App\Like');
+    }
+
     public function store(Request $request)
     {
         $data = $request->input('email');

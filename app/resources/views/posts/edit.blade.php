@@ -17,20 +17,20 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label for="availability_guests">予約人数</label>
-                            <input type="text" class="form-control" id="availability_guests" name="availability_guests" value="{{ $post->availability_guests }}" required>
+                            <label for="num_of_guests">予約人数</label>
+                            <input type="text" class="form-control" id="num_of_guests" name="num_of_guests" value="{{ $post->num_of_guests }}" required>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="checkindate">予約開始日</label>
-                    <input type="date" class="form-control" id="availability_days" name="availability_days" value="{{ $post->availability_days }}" required>
+                    <input type="date" class="form-control" id="checkindate" name="checkindate" value="{{ $post->checkindate }}" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="checkoutdate">予約終了日</label>
-                    <input type="date" class="form-control" id="availability_days" name="availability_days" value="{{ $post->availability_days }}" required>
+                    <input type="date" class="form-control" id="checkoutdate" name="checkoutdate" value="{{ $post->checkoutdate }}" required>
                 </div>
 
                 <div class="form-group">

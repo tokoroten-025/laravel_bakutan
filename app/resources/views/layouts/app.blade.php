@@ -11,6 +11,11 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -86,5 +91,47 @@
             @yield('content')
         </main>
     </div>
+
+    <script>
+        $(function () {
+            console.log('読み込み');
+                var like = $('.js-like-toggle');
+                var likePostId;
+
+                like.on('click', function () {
+                    console.log('クリック成功');
+                    var $this = $(this);
+                    likePostId = $this.data('postid');
+                    console.log(likePostId);
+                    $.ajax({
+                        headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                        url: '/ajaxlike', 
+                        type: 'POST', 
+                        data: {
+                            'post_id': likePostId 
+                        },
+                    })
+
+                        .done(function (data) {
+                            console.log('成功');
+                            $this.toggleClass('loved'); 
+
+                            $this.next('.likesCount').html(data.postLikesCount); 
+                        })
+
+                        .fail(function (xhr, textStatus, errorThrown) {
+                            console.log('エラーが発生しました:');
+                            console.log('ステータスコード:', xhr.status);
+                            console.log('レスポンステキスト:', xhr.responseText);
+                            console.log('ステータス:', textStatus);
+                            console.log('エラー:', errorThrown);
+                        });
+                    
+                    return false;
+                });
+        });
+    </script>
 </body>
 </html>

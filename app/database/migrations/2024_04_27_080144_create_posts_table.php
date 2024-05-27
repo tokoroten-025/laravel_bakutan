@@ -23,9 +23,10 @@ class CreatePostsTable extends Migration
             // タイトル
             $table->string('title', 100);
             // 予約可能人数。NULL を許可。
-            $table->string('availability_guests')->nullable();
+            $table->string('num_of_guests')->nullable();
             // 予約可能日。NULL を許可。
-            $table->date('availability_days')->nullable(); 
+            $table->date('s')->nullable(); 
+            $table->date('s')->nullable(); 
             // 内容
             $table->text('content', 500);
             // 金額

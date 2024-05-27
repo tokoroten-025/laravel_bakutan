@@ -2,9 +2,8 @@
 
 namespace App;
 use App\Booking;
-
 use Illuminate\Database\Eloquent\Model;
-
+use App\Repost;
 
 class Post extends Model
 {
@@ -16,8 +15,9 @@ class Post extends Model
     protected $fillable = 
     [
         'title',
-        'availability_guests',
-        'availability_days',
+        'num_of_guests',
+        'checkindate',
+        'checkoutdate',
         'image',
         'content',
         'amount',
@@ -26,14 +26,19 @@ class Post extends Model
     
     // 予約
     public function booking(){
-        return $this->hasMany('App\Booking', 'post_id', 'id');
+        // return $this->hasMany('App\Booking', 'post_id', 'id');
+        return $this->hasMany(Booking::class, 'post_id', 'id');
     }
 
     // 違反報告
-    public function reports()
+    public function reposts()
     {
-        return $this->hasMany('App\Report');
+        return $this->hasMany(Repost::class, 'post_id', 'id');
     }
 
+    // いいね
+    public function likes(){
+        return $this->hasMany('App\Like');
+    }
     
 }

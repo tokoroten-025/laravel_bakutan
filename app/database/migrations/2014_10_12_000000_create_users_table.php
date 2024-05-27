@@ -29,7 +29,7 @@ class CreateUsersTable extends Migration
             // 論理削除。デフォルト値 0。
             $table->integer('del_flg')->default(0);
             // ユーザータイプ。コメントに一般、旅館、管理の値
-            $table->tinyInteger('role')->default(10)->comment('一般=10,旅館=1,管理=2');
+            $table->tinyInteger('role')->default(10)->comment('一般=10,旅館=2,管理=1');
             // リセットトークンってなに！
             $table->string('reset_token')->nullable();
 

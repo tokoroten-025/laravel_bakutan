@@ -144,7 +144,7 @@ class RyokanPageController extends Controller
     }
 
 
-    // UUserPageController.php
+    // UserPageController.php
 
     public function destroy()
     {

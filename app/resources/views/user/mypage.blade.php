@@ -57,6 +57,9 @@
                     </div>
                     @endif
                 </div>
+                <!-- 予約一覧ページへのリンク -->
+                <a href="{{ route('my.bookings') }}" class="btn btn-primary">予約一覧へ</a>
+
             </div>
         </div>
     </div>

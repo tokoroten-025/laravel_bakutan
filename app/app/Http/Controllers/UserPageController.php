@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Post;// 予約した投稿を表示するために必要
 use App\User;
-
+use App\Booking;
 
 class UserPageController extends Controller
 {
@@ -18,7 +18,7 @@ class UserPageController extends Controller
 
     /**
      * Display a listing of the resource.
-     *
+     *å
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -26,56 +26,10 @@ class UserPageController extends Controller
         // 現在ログインしているユーザーの情報を取得
         $user = Auth::user();
         $userPosts = Post::where('user_id', $user->id)->latest()->get();
-
         // dd($user, $userPosts);
 
         // ユーザー情報と投稿をマイページビューに渡して表示
         return view('user.mypage', ['user' => $user, 'userPosts' => $userPosts]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-        // return view('user.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        // //  バリデーションなどの処理が必要
-
-        // // 新しい投稿を作成
-        // $post = new Post();
-        // $post->user_id = auth()->id();
-        // $post->title = $request->title;
-        // $post->content = $request->content;
-        // // 他の必要な属性を追加
-
-        // // 保存
-        // $post->save();
-
-        // return redirect()->route('user.mypage')->with('success', '新しい投稿が作成されました！');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
     }
 
     /**
@@ -116,6 +70,17 @@ class UserPageController extends Controller
         $user->save();
 
         return redirect()->route('user.mypage')->with('success', 'ユーザー情報が更新されました！');
+    }
+
+    // 予約一覧
+    public function myBookings()
+    {
+        $user = Auth::user();
+        // 現在ログインしているユーザーの予約一覧を取得
+        $userBookings = Booking::where('user_id', Auth::id())->get();
+
+        // ユーザーの予約一覧をビューに渡す
+        return view('user.bookings', ['userBookings' => $userBookings]);
     }
 
     /**

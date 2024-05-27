@@ -1,3 +1,5 @@
+<!-- resources/views/bookings/confirm.blade.php -->
+
 @extends('layouts.app')
 
 @section('content')
@@ -10,11 +12,9 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <!-- 予約情報の表示 -->
-                            <p><strong>予約開始日: </strong>{{ $post->availability_days }}</p>
-                            <p><strong>予約終了日: </strong>{{ $post->availability_days }}</p>
+                            <p><strong>予約開始日: </strong>{{ $post->checkindate }}</p>
+                            <p><strong>予約終了日: </strong>{{ $post->checkoutdate }}</p>
                             <p><strong>金額: </strong>{{ $post->amount }}</p>
-                            <p><strong>内容: </strong>{{ $post->content }}</p>
                         </div>
                         <div class="col-md-6">
                             @if ($post->image)
@@ -25,25 +25,18 @@
                         </div>
                     </div>
                     <hr>
+                    <p><strong>名前: </strong>{{ session('name') }}</p>
+                    <p><strong>予約開始日: </strong>{{ session('checkindate') }}</p>
+                    <p><strong>予約終了日: </strong>{{ session('checkoutdate') }}</p>
+                    <p><strong>人数: </strong>{{ session('guests') }}</p>
+                    <p><strong>電話番号: </strong>{{ session('tel') }}</p>
                 </div>
                 <div class="card-footer">
                     <form action="{{ route('bookings.store') }}" method="POST">
                         @csrf
-                        <!-- 投稿IDを持たせる -->
                         <input type="hidden" name="post_id" value="{{ $post->id }}">
-                        <input type="hidden" name="user_id" value="{{ auth()->id() }}">
-                        
-                        <!-- 予約情報のフォーム -->
-                        @foreach(['name' => '名前', 'checkindate' => '予約開始日', 'checkoutdate' => '予約終了日', 'guests' => '人数', 'tel' => '電話番号'] as $field => $label)
-                        <div class="form-group">
-                            <label for="{{ $field }}">{{ $label }}</label>
-                            <input type="{{ $field === 'tel' }}" class="form-control" id="{{ $field }}" name="{{ $field }}" value="{{ $post->{$field} }}" readonly>
-                        </div>
-                        @endforeach
 
-                        <!-- 確認ボタン -->
-                        <button type="submit" class="btn btn-primary">予約する</button>
-
+                        <button type="submit" class="btn btn-primary">予約を確定する</button>
                     </form>
                 </div>
             </div>
