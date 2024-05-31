@@ -12,12 +12,10 @@
                     <div>
                         <p>ユーザー名: {{ Auth::user()->name }}</p>
                         <p>メールアドレス: {{ Auth::user()->email }}</p>
-                        <p>ユーザーアイコン: 
-                            @if(Auth::user()->icon)
-                                <img src="{{ asset('storage/' . Auth::user()->icon) }}" alt="User icon" class="img-thumbnail">
-                            @else
-                                <img src="{{ asset('default-icon.png') }}" alt="Default icon" class="img-thumbnail">
-                            @endif
+                        <!-- ユーザーアイコン -->
+                        @if (Auth::user()->icon)
+                            <p>ユーザーアイコン: <img src="{{ Storage::url(Auth::user()->icon) }}" alt="User icon" class="img-thumbnail"></p>
+                        @endif
                     </div>
                     <!-- ユーザー情報編集リンク -->
                     <a href="{{ route('ryokan.edit', Auth::user()->id) }}" class="btn btn-primary">編集</a>
@@ -38,9 +36,9 @@
                     @foreach($posts as $post)
                     <div class="card mb-3">
                     <a href="{{ route('posts.detail', $post->id) }}" class="card-header">{{ $post->title }}</a>
-                    @if($post->image)
-                        <img src="{{ asset('public/img/' . $post->id . '/' . $post->image) }}" class="card-img-top" alt="{{ $post->title }}">
-                    @endif 
+                    @if ($post->image)
+                        <img src="{{ asset('img/' . $post->id . '/' . $post->image) }}" alt="{{ $post->title }}" class="img-fluid">
+                    @endif
                         <div class="card-body">
                             <p class="card-text">{{ $post->description }}</p>
                             <!-- 編集　-->

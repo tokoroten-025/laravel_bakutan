@@ -1,32 +1,31 @@
-// search_results.blade.php
-
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-9">
-            <div class="card">
-                <div class="card-header">Search Results</div>
-                <div class="card-body">
-                    @if ($results->isEmpty())
-                        <p>No results found.</p>
-                    @else
-                        <div class="list-group">
-                            @foreach ($results as $result)
-                                <a href="{{ route('posts.detail', $result) }}" class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">{{ $result->title }}</h5>
-                                        <small>{{ $result->created_at->format('Y-m-d') }}</small>
-                                    </div>
-                                    <p class="mb-1">{{ $result->content }}</p>
-                                </a>
-                            @endforeach
+<div class="container">
+    <h1>検索結果</h1>
+    @if($posts->isEmpty())
+        <p>該当する投稿が見つかりませんでした。</p>
+    @else
+        <div class="row">
+            @foreach ($posts as $post)
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <a href="{{ route('posts.detail', $post) }}">{{ $post->title }}</a>
                         </div>
-                    @endif
+                        <div class="card-body">
+                            @if ($post->image)
+                                <img src="{{ asset('img/' . $post->id . '/' . $post->image) }}" alt="{{ $post->title }}" class="img-fluid">
+                            @endif
+                            <p>{{ $post->content }}</p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <small>{{ $post->created_at->format('Y-m-d') }}</small>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @endforeach
         </div>
-    </div>
+    @endif
 </div>
 @endsection

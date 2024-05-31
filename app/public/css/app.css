@@ -10929,5 +10929,18 @@ a.text-dark:focus {
     color: inherit;
     border-color: #dee2e6;
   }
+/* カスタムスタイル */
+.btn-pink {
+  color: #fff;
+  background-color: #ff69b4; /* ピンク色 */
+  border-color: #ff69b4; /* ピンク色 */
 }
+
+.btn-pink:hover {
+  color: #fff;
+  background-color: #ff1493; /* ホバー時の色 */
+  border-color: #ff1493; /* ホバー時の色 */
+}
+}
+
 

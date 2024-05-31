@@ -117,9 +117,10 @@ class PostController extends Controller
         // return view('posts.detail', ['post' => $post]);
     }
 
+    // いいね機能
     public function ajaxlike(Request $request)
     {
-        dd('ajax成功');
+        // dd('ajax成功');
         $id = Auth::user()->id;
         $post_id = $request->post_id;
         $like = new Like;
@@ -128,7 +129,7 @@ class PostController extends Controller
         if ($like->like_exist($id, $post_id)) {
             $like = Like::where('post_id', $post_id)->where('user_id', $id)->delete();
         } else {
-            $like = new Like;
+            // $like = new Like;
             $like->post_id = $request->post_id;
             $like->user_id = Auth::user()->id;
             $like->save();
@@ -142,6 +143,17 @@ class PostController extends Controller
         //下記の記述でajaxに引数の値を返す
         return response()->json($json);
     }
+
+    // いいね一覧
+    public function likedPosts()
+    {
+        // ログインしているユーザーがいいねした投稿を取得
+        $userLikes = Auth::user()->likes()->with('post')->get();
+
+        // いいねした投稿の一覧ページを表示
+        return view('posts.liked', ['userLikes' => $userLikes]);
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -163,17 +175,13 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // 指定された ID の投稿を取得
-        $post = Post::findOrFail($id);
-
-        // 投稿の内容を更新
-        $post->title = $request->title;
-        $post->content = $request->content;
-        $post->amount = $request->amount;
-        // availability に関連したデータの取り扱い
-        if ($request->has('availability')) {
-            $post->availability = $request->availability;
-        }
+    // 投稿の内容を更新
+        $post->title = $request->input('title');
+        $post->content = $request->input('content');
+        $post->amount = $request->input('amount');
+        $post->checkindate = $request->input('checkindate'); // チェックイン日を更新
+        $post->checkoutdate = $request->input('checkoutdate'); // チェックアウト日を更新
+        
         $post->save();
         // 更新後に編集した投稿の詳細ページにリダイレクト
         return redirect()->route('posts.detail', $post->id);

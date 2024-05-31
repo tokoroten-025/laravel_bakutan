@@ -19,12 +19,14 @@
 
                 <div class="form-group">
                     <label for="checkindate">予約開始日</label>
-                    <input type="date" class="form-control" id="checkindate" name="checkindate" required>
+                    <!-- <input type="date" class="form-control" id="checkindate" name="checkindate" required> -->
+                    <input type="date" name="checkindate" value="{{ $checkindate }}">                
                 </div>
 
                 <div class="form-group">
                     <label for="checkoutdate">予約終了日</label>
-                    <input type="date" class="form-control" id="checkoutdate" name="checkoutdate" required>
+                    <!-- <input type="date" class="form-control" id="checkoutdate" name="checkoutdate" required> -->
+                    <input type="date" name="checkoutdate" value="{{ $checkoutdate }}">
                 </div>
 
                 <div class="form-group">

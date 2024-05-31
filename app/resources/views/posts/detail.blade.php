@@ -51,43 +51,43 @@
                     <a href="{{ route('bookings.create', ['post' => $post->id]) }}" class="btn btn-primary">予約</a>
                     <a href="{{ route('home') }}" class="btn btn-secondary">TOPに戻る</a>
                     <!-- 違反報告ボタン -->
-<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">
-    違反を報告する
-</button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">
+                        違反を報告する
+                    </button>
 
-<!-- 違反報告用モーダル -->
-<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reportModalLabel">違反報告フォーム</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- 違反報告フォーム -->
-            <form action="{{ route('repost.post', ['postId' => $post->id]) }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <!-- <label for="reason">違反理由</label>
-                     <select class="form-control" id="reason" name="reason" required>
-                        <option value="1">スパム</option>
-                        <option value="2">不適切なコンテンツ</option>
-                        <option value="3">その他</option>
-                    </select> -->
-                </div>
-                <div class="form-group">
-                    <label for="reason">違反理由</label>
-                    <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">送信</button>
-            </form>
+                    <!-- 違反報告用モーダル -->
+                    <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="reportModalLabel">違反報告フォーム</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- 違反報告フォーム -->
+                                <form action="{{ route('repost.post', ['postId' => $post->id]) }}" method="POST">
+                                    @csrf
+                                    <div class="form-group">
+                                        <!-- <label for="reason">違反理由</label>
+                                        <select class="form-control" id="reason" name="reason" required>
+                                            <option value="1">スパム</option>
+                                            <option value="2">不適切なコンテンツ</option>
+                                            <option value="3">その他</option>
+                                        </select> -->
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="reason">違反理由</label>
+                                        <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">送信</button>
+                                </form>
 
-            </div>
-        </div>
-    </div>
-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

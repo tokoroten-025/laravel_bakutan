@@ -9,11 +9,12 @@ class SearchController extends Controller
 {
     public function search(Request $request)
     {
+        
         // フォームの送信内容を取得し、処理するコードを記述する
         $query = Post::query();
 
         // テキスト検索
-        if ($request->filled('search')) {
+        if ($request->input('search')) {
             $search = $request->input('search');
             $query->where(function($q) use ($search) {
                 $q->where('title', 'LIKE', "%{$search}%")
@@ -23,21 +24,22 @@ class SearchController extends Controller
         }
 
         // 宿泊可能日検索
-        if ($request->filled('date')) {
+        if ($request->input('date')) {
+            dd(1);
             $date = $request->input('date');
             $query->where('available_date', '>=', $date);
         }
 
         // 金額検索
-        if ($request->filled('price')) {
+        if ($request->input('price')) {
             $priceRange = explode('-', $request->input('price'));
             if (count($priceRange) == 2) {
                 $query->whereBetween('price', [intval($priceRange[0]), intval($priceRange[1])]);
             }
         }
 
-        $posts = $query->get();
+        $latestPosts = $query->get();
 
-        return view('search', compact('posts'));
+        return view('home', compact('latestPosts'));
     }
 }

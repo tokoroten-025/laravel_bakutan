@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Post;// 予約した投稿を表示するために必要
 use App\User;
+use App\Like;
 use App\Booking;
 
 class UserPageController extends Controller
@@ -26,10 +27,11 @@ class UserPageController extends Controller
         // 現在ログインしているユーザーの情報を取得
         $user = Auth::user();
         $userPosts = Post::where('user_id', $user->id)->latest()->get();
+        $bookings = Booking::all();
         // dd($user, $userPosts);
 
         // ユーザー情報と投稿をマイページビューに渡して表示
-        return view('user.mypage', ['user' => $user, 'userPosts' => $userPosts]);
+        return view('user.mypage', ['user' => $user, 'userPosts' => $userPosts, 'Bookings' => $Bookings ]);
     }
 
     /**
@@ -81,6 +83,15 @@ class UserPageController extends Controller
 
         // ユーザーの予約一覧をビューに渡す
         return view('user.bookings', ['userBookings' => $userBookings]);
+    }
+
+    // いいね一覧
+    public function likes()
+    {
+        // ユーザーがいいねした投稿を取得する処理
+        $userLikes = Auth::user()->likes()->get(); // ユーザーのいいねした投稿一覧を取得する例
+        
+        return view('user.likes', compact('userLikes'));
     }
 
     /**

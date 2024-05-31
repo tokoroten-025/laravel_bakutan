@@ -12,7 +12,6 @@
                     <div>
                         <p>ユーザー名: {{ Auth::user()->name }}</p>
                         <p>メールアドレス: {{ Auth::user()->email }}</p>
-                        <!-- <p>ユーザーアイコン: <img src="{{ Auth::user()->icon }}" alt="User icon" class="img-thumbnail"></p> -->
                         <!-- ユーザーアイコン -->
                         @if (Auth::user()->icon)
                             <p>ユーザーアイコン: <img src="{{ Storage::url(Auth::user()->icon) }}" alt="User icon" class="img-thumbnail"></p>
@@ -22,7 +21,7 @@
                     <a href="{{ route('user.edit', Auth::user()->id) }}" class="btn btn-primary">編集</a>
 
                     <!-- 新規投稿の追加リンク -->
-                    <a href="{{ route('posts.create') }}" class="btn btn-success">新しい投稿をする</a>
+                    <!-- <a href="{{ route('posts.create') }}" class="btn btn-success">新しい投稿をする</a> -->
                 </div>
             </div>
         </div>
@@ -59,6 +58,10 @@
                 </div>
                 <!-- 予約一覧ページへのリンク -->
                 <a href="{{ route('my.bookings') }}" class="btn btn-primary">予約一覧へ</a>
+                <!-- いいねした投稿一覧ページへのリンク -->
+                <a href="{{ route('likes') }}" class="btn btn-pink">いいね一覧へ</a>
+        
+                </div>
 
             </div>
         </div>

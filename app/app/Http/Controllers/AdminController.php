@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User; 
+use App\Post;
 // 必要に応じてユーザーモデルをインポートする
 
 class AdminController extends Controller
@@ -15,14 +16,13 @@ class AdminController extends Controller
      */
     public function index()
     {
-        // 管理者認証を確認
-        if (auth()->user()->role != 1) {
-            abort(403, 'Unauthorized action.');
-        }
+     // 一般ユーザーのリストを取得
+     $Users = User::where('role', 'user')->get();
 
-        // 管理者が行う必要がある各種操作を含むダッシュボードの表示処理（管理者以外のユーザーを取得）
-        $users = User::where('role', '!=', 10)->get();
-        return view('admins.dashboard', compact('users'));
+     // 旅館運営ユーザーの投稿のリストを取得
+     $ryokanPosts = Post::where('user_role', 'ryokan_owner')->get();
+
+     return view('admin.index', ['Users' => $Users, 'ryokanPosts' => $ryokanPosts]);
     }
 
     /**

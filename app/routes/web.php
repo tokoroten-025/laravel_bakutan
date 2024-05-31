@@ -12,6 +12,8 @@ use App\Http\Controllers\UserPageController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\RepostController;
+use App\Like;
+use App\Http\Controllers\AdminController;
 
 
 
@@ -32,13 +34,14 @@ Auth::routes(['reset' => true]);
 // ★★★トップページ（今回HOME画面になるところ）
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // 検索結果ページ
-Route::get('/search/result', [SearchController::class, 'search'])->name('search');
+Route::get('/search/result', [SearchController::class, 'search'])->name('search.result');
 
 
 // ログインが必要なルート
 Route::middleware(['auth'])->group(function () {
 // ★★★旅館ユーザーマイページ
 Route::get('/ryokan/mypage', [RyokanPageController::class,'index'])->name('ryokan.mypage');
+Route::post('/ajaxlike', [PostController::class, 'ajaxlike'])->name('posts.ajaxlike');
 // 旅館ユーザー情報の編集
 Route::get('/ryokan/{id}/edit', [RyokanPageController::class,'edit'])->name('ryokan.edit');
 // 旅館ユーザー情報の更新
@@ -65,8 +68,6 @@ Route::put('/posts/{post}', [PostController::class,'update'])->name('posts.updat
 Route::delete('/posts/{post}', [PostController::class,'destroy'])->name('posts.destroy');
 // 投稿削除
 Route::delete('/posts/{post}/soft-delete', [PostController::class, 'softDestroyPost'])->name('posts.softDestroyPost');
-// いいね機能
-Route::post('/ajaxlike', [PostController::class, 'ajaxlike'])->name('posts.ajaxlike');
 
 });
 
@@ -103,9 +104,12 @@ Route::post('/bookings/store', [BookingController::class, 'store'])->name('booki
 Route::get('/post/{post}', [PostController::class,'show'])->name('posts.detail');
 // 保存
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
-// 予約キャンセルルートを追加
+// 予約キャンセル
 Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])->name('bookings.destroy');
-
+// いいね機能
+Route::post('/ajaxlike', [PostController::class, 'ajaxlike'])->name('posts.ajaxlike');
+// ブックマーク一覧ページ
+Route::get('/user/likes', [UserPageController::class, 'likes'])->name('likes');
 //  違反報告
     Route::post('/repost/{postId}', [RepostController::class, 'reportPost'])->name('repost.post');
     Route::get('/reposts', [RepostController::class, 'index'])->name('reposts.index');
@@ -113,6 +117,10 @@ Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])->name('bo
     Route::put('/reposts/{id}/resolve', [RepostController::class, 'resolve'])->name('reposts.resolve');
 });
 
-// 後で書き直す！初期にAuth::routes();をコメントアウトして、これ書いたらなんでかエラー無くなった
+// 管理者
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admins/dashboard', [AdminController::class, 'index'])->name('admin.index');
+});
+
 // ログアウトルート
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
