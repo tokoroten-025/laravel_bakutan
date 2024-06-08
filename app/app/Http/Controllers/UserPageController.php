@@ -27,11 +27,15 @@ class UserPageController extends Controller
         // 現在ログインしているユーザーの情報を取得
         $user = Auth::user();
         $userPosts = Post::where('user_id', $user->id)->latest()->get();
-        $bookings = Booking::all();
+        $bookings = Booking::where('user_id', Auth::id())->get();
         // dd($user, $userPosts);
 
         // ユーザー情報と投稿をマイページビューに渡して表示
-        return view('user.mypage', ['user' => $user, 'userPosts' => $userPosts, 'Bookings' => $Bookings ]);
+        return view('user.mypage', [
+            'user' => $user, 
+            'userPosts' => $userPosts, 
+            'bookings' => $bookings 
+        ]);
     }
 
     /**

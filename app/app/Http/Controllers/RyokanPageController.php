@@ -7,7 +7,8 @@ use App\Post;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\User;
-
+use App\Booking;
+use App\Repost;
 
 class RyokanPageController extends Controller
 {
@@ -23,12 +24,30 @@ class RyokanPageController extends Controller
      */
     public function index()
     {
-        // 旅館ユーザーに紐づく投稿を取得
+        // ログインユーザーIDを取得
         $userId = Auth::id();
+        
+        // 旅館ユーザーの投稿を取得
         $latestPosts = Post::where('user_id', $userId)->get(); 
         
-        return view('ryokan.mypage', ['posts' => $latestPosts]);
-        
+        // 予約データを取得
+        $reservations = Booking::whereHas('post', function($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->get();
+
+        // 違反報告を取得
+        $reposts = Repost::with('post')->where('user_id', $userId)->get(); // 必要に応じて条件を変更してください
+        // dd($reposts);
+
+        // 予約データを取得
+        // $reservations = booking::where('user_id', Auth::id())->get();
+
+        // ビューにデータを渡して表示
+        return view('ryokan.mypage', [
+            'posts' => $latestPosts,
+            'reservations' => $reservations,
+            'reposts' => $reposts // 違反報告をビューに渡す
+        ]);
     }
 
     /**
@@ -126,46 +145,72 @@ class RyokanPageController extends Controller
         return view('users.confirm');
     }
 
-    // アカウントを削除
     public function delete(Request $request)
-    {
-        // ログイン中のユーザーを取得
-        $user = $request->user();
+{
+    // ログイン中のユーザーを取得
+    $user = $request->user();
 
-        if ($user->icon) {
-            Storage::disk('public')->delete($user->icon);
-        }
-        // アカウントを削除
-        $user->delete();
-
-        // ログアウトしてホーム画面にリダイレクトするなどの処理を追加
-        Auth::logout();
-        return redirect()->route('home')->with('message', 'アカウントを削除しました');
+    // アイコンがあれば削除
+    if ($user->icon) {
+        Storage::disk('public')->delete($user->icon);
     }
 
+    // ユーザーに関連する情報を削除する例
+    // $user->posts()->delete();
+    // $user->bookings()->delete();
 
-    // UserPageController.php
+    // ユーザーを削除
+    $user->delete();
 
-    public function destroy()
-    {
-        // ログイン中のユーザーを取得
-        $user = Auth::user();
-        if ($user->icon) {
-            Storage::disk('public')->delete($user->icon);
-        }
+    // ログアウトさせる
+    Auth::logout();
+
+    // リダイレクトまたはメッセージを表示
+    return redirect()->route('home')->with('success', 'アカウントを削除しました');
+}
+
+
+    // // アカウントを削除
+    // public function delete(Request $request)
+    // {
+    //     // ログイン中のユーザーを取得
+    //     $user = $request->user();
+
+    //     if ($user->icon) {
+    //         Storage::disk('public')->delete($user->icon);
+    //     }
+    //     // アカウントを削除
+    //     $user->delete();
+
+    //     // ログアウトしてホーム画面にリダイレクトするなどの処理を追加
+    //     Auth::logout();
+    //     return redirect()->route('home')->with('message', 'アカウントを削除しました');
+    // }
+
+
+    // // UserPageController.php
+
+    // public function destroy()
+    // {
+    //     // ログイン中のユーザーを取得
+    //     $user = Auth::user();
+    //     if ($user->icon) {
+    //         Storage::disk('public')->delete($user->icon);
+    //     }
         
-        // ユーザーに関連する情報を削除する例
-        // $user->posts()->delete();
-        // $user->bookings()->delete();
+    //     // ユーザーに関連する情報を削除する例
+    //     // $user->posts()->delete();
+    //     // $user->bookings()->delete();
 
-        // ユーザーを削除
-        $user->delete();
+    //     // ユーザーを削除
+    //     $user->delete();
 
-        // ログアウトさせて
-        Auth::logout();
+    //     // ログアウトさせて
+    //     Auth::logout();
 
-        // リダイレクトまたはメッセージを表示
-        return redirect()->route('home')->with('success', '退会しました。');
-    }
+    //     // リダイレクトまたはメッセージを表示
+    //     return redirect()->route('home')->with('success', '退会しました。');
+    // }
+
 
 }

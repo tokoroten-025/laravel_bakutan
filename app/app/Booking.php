@@ -3,11 +3,11 @@
 namespace App;
 use App\Post;
 
-
 use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
+
     // モデルに関連付けるテーブル
     protected $table = 'bookings';
     public $timestamps = true;
@@ -21,4 +21,11 @@ class Booking extends Model
         // 名前空間のエイリアス: use App\Post; を先頭に書くことで、コード内でPostクラスを使用する際にApp\Postを指定する必要がなくなります。これにより、コードが簡潔になります。
         // リファクタリングのしやすさ: もしPostクラスの名前空間が変更されたり、別のクラスに置き換えられたりした場合でも、Post::classを使用することで自動的に正しいクラスパスが参照されます。そのため、コードの保守性が向上します。
     }
+
+    // ユーザーとのリレーション
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

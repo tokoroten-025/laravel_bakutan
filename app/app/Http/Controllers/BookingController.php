@@ -107,14 +107,6 @@ class BookingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    // public function myBookings($id)
-    // {
-    //  // 現在ログインしているユーザーの予約一覧を取得
-    //  $userBookings = Booking::where('user_id', Auth::id())->get();
-
-    //  // ユーザーの予約一覧をビューに渡す
-    //  return view('bookings.my', ['userBookings' => $userBookings]);
-    // }
 
     /**
      * Show the form for editing the specified resource.

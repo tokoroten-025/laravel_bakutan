@@ -14,32 +14,40 @@ class SearchController extends Controller
         $query = Post::query();
 
         // テキスト検索
-        if ($request->input('search')) {
-            $search = $request->input('search');
+        if ($request->input('keyword')) {
+            $search = $request->input('keyword');
             $query->where(function($q) use ($search) {
                 $q->where('title', 'LIKE', "%{$search}%")
-                  ->orWhere('content', 'LIKE', "%{$search}%")
-                  ->orWhere('address', 'LIKE', "%{$search}%");
+                  ->orWhere('content', 'LIKE', "%{$search}%");
             });
         }
 
         // 宿泊可能日検索
-        if ($request->input('date')) {
-            dd(1);
-            $date = $request->input('date');
-            $query->where('available_date', '>=', $date);
+        if ($request->input('checkindate')) {
+            $date = $request->input('checkindate');
+            $query->where('checkindate', '>=', $date);
         }
 
         // 金額検索
-        if ($request->input('price')) {
-            $priceRange = explode('-', $request->input('price'));
+        if ($request->input('price_range')) {
+            $priceRange = explode('-', $request->input('price_range'));
             if (count($priceRange) == 2) {
-                $query->whereBetween('price', [intval($priceRange[0]), intval($priceRange[1])]);
+                $query->whereBetween('amount', [intval($priceRange[0]), intval($priceRange[1])]);
             }
         }
 
         $latestPosts = $query->get();
 
-        return view('home', compact('latestPosts'));
+        $keyword = $request->input('keyword');
+        $checkindate = $request->input('checkindate');
+        $price_range = $request->input('price_range');
+
+
+        return view('home', [
+            'latestPosts' => $latestPosts,
+            'keyword' => $keyword,
+            'checkindate' => $checkindate,
+            'price_range' => $price_range,
+        ]);
     }
 }

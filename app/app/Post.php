@@ -23,22 +23,29 @@ class Post extends Model
         'amount',
         'del_flg',
     ];
-    
-    // 予約
+
+    // 予約とのリレーション
     public function booking(){
         // return $this->hasMany('App\Booking', 'post_id', 'id');
         return $this->hasMany(Booking::class, 'post_id', 'id');
     }
 
+    // ユーザーとのリレーション
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     // 違反報告
     public function reposts()
     {
-        return $this->hasMany(Repost::class, 'post_id', 'id');
+        return $this->hasMany(Repost::class);
     }
+
 
     // いいね
     public function likes(){
         return $this->hasMany('App\Like');
     }
-    
+    //ALTER  TABLE  bookings  DROP  CONSTRAINT  UNIQUE KEY; 
 }

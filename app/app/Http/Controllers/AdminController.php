@@ -17,77 +17,31 @@ class AdminController extends Controller
     public function index()
     {
      // 一般ユーザーのリストを取得
-     $Users = User::where('role', 'user')->get();
-
+     $users = User::where('role', 10)->get();
      // 旅館運営ユーザーの投稿のリストを取得
-     $ryokanPosts = Post::where('user_role', 'ryokan_owner')->get();
+     $posts = Post::all();
 
-     return view('admin.index', ['Users' => $Users, 'ryokanPosts' => $ryokanPosts]);
+     return view('admins.dashboard', ['users' => $users, 'posts' => $posts]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function adminDashboard()
     {
-        //
+        // 表示停止された投稿件数の多いユーザー上位10件
+        $users = User::withCount(['posts' => function ($query) {
+            $query->where('status', 'suspended');
+        }])
+        ->orderBy('posts_count', 'desc')
+        ->take(10)
+        ->get();
+
+        // 違反報告数の多い投稿上位20件
+        $posts = Post::withCount('reports')
+        ->orderBy('reports_count', 'desc')
+        ->take(20)
+        ->get();
+
+        return view('admin', compact('users', 'posts'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+    
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-}

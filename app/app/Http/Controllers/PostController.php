@@ -24,7 +24,7 @@ class PostController extends Controller
         $latestPosts = Post::all();
         
        // 投稿一覧ページを表示
-       return view('ryokan.mypage', ['user' => $user, 'posts' => $latestPosts]);
+    //    return view('ryokan.mypage', ['user' => $user, 'posts' => $latestPosts]);
             
             $keyword = $request->input('keyword');
         
@@ -51,8 +51,9 @@ class PostController extends Controller
 
      public function create()
     {
-        // 新規投稿フォームを表示するページ
-        return view('posts.create');
+        $checkindate = date('Y-m-d');
+        $checkoutdate = date('Y-m-d');
+        return view('posts.create', compact('checkindate', 'checkoutdate'));
     }
     
     // 投稿を保存する処理
@@ -105,6 +106,8 @@ class PostController extends Controller
         //【いいね機能】
         $like_model = new Like;//Likeモデルのデータ取得
         $post_like = Post::withCount('likes')->find($post->id);
+
+        // dd($post);
 
         // 特定の投稿の詳細を表示
         return view('posts.detail', [
@@ -175,6 +178,8 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // dd($request);
+        $post = Post::find($id);
     // 投稿の内容を更新
         $post->title = $request->input('title');
         $post->content = $request->input('content');
@@ -201,7 +206,7 @@ class PostController extends Controller
 
         $post->save();
         // 投稿を削除
-        // $post->delete();
+        $post->delete();
 
         // マイページにリダイレクト
         return redirect()->route('ryokan.mypage')->with('success', '投稿が削除されました');

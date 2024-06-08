@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Repost; 
 use App\Post; // 違反報告の対象である投稿を使用するために記載
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class RepostController extends Controller
 {
@@ -28,7 +29,7 @@ class RepostController extends Controller
     // すべての違反報告を表示
     public function index()
     {
-        $reposts = Repost::all(); // モデル名を正しく記述
+        $reposts = Repost::all(); 
         return view('reposts.index', ['reposts' => $reposts]);
     }
 
@@ -36,7 +37,7 @@ class RepostController extends Controller
     public function show($id)
     {
         $repost = Repost::findOrFail($id); 
-        return view('reposts.show', ['repost' => $repost]); // 変数名を修正
+        return view('reposts.show', ['repost' => $repost]); 
     }
 
     // 違反報告を処理

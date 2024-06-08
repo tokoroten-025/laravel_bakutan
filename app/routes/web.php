@@ -27,14 +27,16 @@ use App\Http\Controllers\AdminController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-// 未ログインユーザーがアクセスできるルート
-Route::get('/posts/{post}', [PostController::class,'show'])->name('posts.detail');
+
+
 //　ログイン認証
 Auth::routes(['reset' => true]);
 // ★★★トップページ（今回HOME画面になるところ）
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // 検索結果ページ
 Route::get('/search/result', [SearchController::class, 'search'])->name('search.result');
+// 未ログインユーザーがアクセスできるルート
+Route::get('/posts/{post}/detail', [PostController::class, 'show'])->name('posts.detail');
 
 
 // ログインが必要なルート
@@ -68,9 +70,10 @@ Route::put('/posts/{post}', [PostController::class,'update'])->name('posts.updat
 Route::delete('/posts/{post}', [PostController::class,'destroy'])->name('posts.destroy');
 // 投稿削除
 Route::delete('/posts/{post}/soft-delete', [PostController::class, 'softDestroyPost'])->name('posts.softDestroyPost');
+// 違反報告
+Route::post('/reposts/{postId}/report', [RepostController::class, 'reportPost'])->name('repost.post');
 
 });
-
 
 // 一般ユーザーマイページ
 Route::middleware(['auth'])->group(function () {
@@ -119,7 +122,7 @@ Route::get('/user/likes', [UserPageController::class, 'likes'])->name('likes');
 
 // 管理者
 Route::middleware(['auth'])->group(function () {
-    Route::get('/admins/dashboard', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/admins/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 });
 
 // ログアウトルート
