@@ -24,7 +24,7 @@ class PostController extends Controller
         $latestPosts = Post::all();
         
        // 投稿一覧ページを表示
-    //    return view('ryokan.mypage', ['user' => $user, 'posts' => $latestPosts]);
+    //return view('ryokan.mypage', ['user' => $user, 'posts' => $latestPosts]);
             
             $keyword = $request->input('keyword');
         

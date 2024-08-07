@@ -18,36 +18,32 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['index']);
     }
-
-        /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
 
     /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+
     public function index()
     {
-        // return view('home');
-
-        if(Auth::user()->role == 1){
-            return redirect('/admins/dashboard');
-        }
-        // latest()はEloquentクエリビルダのメソッド。DBに保存されているレコードを作成日時または更新日時の降順で並び替える役割がある。最新のレコードを取得するためによく使用されるメソッド。
-        // 旅館ユーザーが投稿したデータを取得する（最新の5件）
-        $latestPosts = Post::latest()->take(5)->get();
-        // dd($latestPosts);
+        // ユーザーがログインしている場合の処理
+        if (Auth::check()) {
+            if(Auth::user()->role == 1){
+                return redirect('/admins/dashboard');
+            }
         // ログインユーザーが自分が投稿したデータも取得する
         $userPosts = Auth::user()->post()->get();
-
-        // dd($posts);
-
+        } else {
+            // 未ログインユーザーには空のコレクションを返す
+            $userPosts = collect();
+        }
+        // latest()はEloquentクエリビルダのメソッド。DBに保存されているレコードを作成日時または更新日時の降順で並び替える役割がある。最新のレコードを取得するためによく使用されるメソッド。
+        // 旅館ユーザーが投稿したデータを取得する（最新の8件）
+        $latestPosts = Post::latest()->take(8)->get();
+        // dd($latestPosts);
         $keyword = '';
         $checkindate = '';
         $price_range = '';
@@ -60,7 +56,6 @@ class HomeController extends Controller
             'checkindate' => $checkindate,
             'price_range' => $price_range,
         ]);
-
 
     }
 }

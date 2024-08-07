@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Booking;
+use App\Booking; // 予約モデルの使用
 use App\Post;
 
 class BookingController extends Controller
@@ -25,7 +25,7 @@ class BookingController extends Controller
         // 予約の一覧を表示
         $bookings = Booking::all();     
         // 取得した予約情報をビューに渡す
-        return view('booking.index', ['bookings' => $bookings]);
+        return view('bookings.index', ['bookings' => $bookings]);
 
     }
 
@@ -71,14 +71,25 @@ class BookingController extends Controller
     public function store(Request $request)
     {   
         // バリデーション
+        $validated = $request->validate([
+            'post_id' => 'required|exists:posts,id',
+            'user_id' => 'required|exists:users,id',
+            'name' => 'required|string|max:255',
+            'checkindate' => 'required|date',
+            'checkoutdate' => 'required|date',
+            'guests' => 'required|integer',
+            'tel' => 'required|string|max:15',
+        ]);
 
         // 投稿IDを取得
         $postId = $request->input('post_id');
         // ログインしているユーザーを取得
         $user = Auth::user();
+        // もしログイン（登録）していない場合はログイン画面へ
         if (!$user) {
             return redirect()->route('login');
         }
+
         // 予約を新規作成
         $booking = new Booking();
         // 予約に関するデータをリクエストから取得して設定
@@ -95,8 +106,11 @@ class BookingController extends Controller
 
         $booking->save();
 
-        $request->session()->forget(['name', 'tel', 'checkindate', 'checkoutdate', 'guests']);
-        // 予約作成後、詳細ページにリダイレクトする
+        // セッションにフラッシュメッセージを設定
+        // $request->session()->flash('status', '予約が完了しました！');
+
+        $request->session()->flash('status', '予約が完了しました！')->forget(['name', 'tel', 'checkindate', 'checkoutdate', 'guests']);
+        // // 予約作成後、詳細ページにリダイレクトする
         return redirect()->route('posts.detail', ['post' => $booking->post_id]);
 
     }

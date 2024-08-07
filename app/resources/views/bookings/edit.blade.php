@@ -23,7 +23,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="checkoutdate">テックアウト</label>
+                            <label for="checkoutdate">チェックアウト</label>
                             <input type="date" class="form-control" id="checkoutdate" name="checkoutdate" value="{{ $booking->checkoutdate }}" required>
                         </div>
 

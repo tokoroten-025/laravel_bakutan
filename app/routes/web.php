@@ -1,10 +1,9 @@
 <?php
 
-
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Post;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\RyokanPageController;
@@ -31,6 +30,7 @@ use App\Http\Controllers\AdminController;
 
 //　ログイン認証
 Auth::routes(['reset' => true]);
+// 未ログインユーザーがアクセスできるルート
 // ★★★トップページ（今回HOME画面になるところ）
 Route::get('/', [HomeController::class, 'index'])->name('home');
 // 検索結果ページ
@@ -54,7 +54,6 @@ Route::delete('/ryokan/{id}/delete', [RyokanPageController::class,'destroy'])->n
 Route::get('/ryokan/delete/confirm', [RyokanPageController::class,'confirmDelete'])->name('delete.confirm');
 //　論理削除
 Route::post('/ryokan/delete', [RyokanPageController::class,'delete'])->name('ryokan.delete');
-
 // 投稿関連ルート
 // 新規投稿
 Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
@@ -74,7 +73,6 @@ Route::delete('/posts/{post}/soft-delete', [PostController::class, 'softDestroyP
 Route::post('/reposts/{postId}/report', [RepostController::class, 'reportPost'])->name('repost.post');
 
 });
-
 // 一般ユーザーマイページ
 Route::middleware(['auth'])->group(function () {
 // ユーザーマイページ
@@ -123,6 +121,9 @@ Route::get('/user/likes', [UserPageController::class, 'likes'])->name('likes');
 // 管理者
 Route::middleware(['auth'])->group(function () {
     Route::get('/admins/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    // 投稿詳細
+    Route::get('/posts/{post}/detail', [PostController::class, 'show'])->name('posts.detail');
+
 });
 
 // ログアウトルート

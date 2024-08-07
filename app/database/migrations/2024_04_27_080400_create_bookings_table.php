@@ -51,3 +51,5 @@ class CreateBookingsTable extends Migration
         Schema::dropIfExists('bookings');
     }
 }
+// ALTER TABLE `bookings` DROP INDEX `bookings_email_unique`;
+// 結局、↑で削除した
